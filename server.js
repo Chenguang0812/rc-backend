@@ -42,7 +42,7 @@ app.post("/", async (req, res) => {
         // ✅ Email 通知
         await resend.emails.send({
             from: "RC 帝國 <onboarding@resend.dev>", // ❗️Resend 限制只能用這個寄件者
-            to: ["roalxfreefire@gmail.com"], // ⚠️ 必須是陣列格式
+            to: ["rcstudiochenguang@gmail.com"], // ⚠️ 必須是陣列格式
             subject: `RC帝國報名通知：${data.name}`,
             html: `
         <h2>📨 RC 帝國收到新報名表：</h2>
