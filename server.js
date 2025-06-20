@@ -7,12 +7,12 @@ const { Resend } = require("resend");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ✅ 請填入你的 Resend API 金鑰
+// ✅ Resend API 金鑰（建議用 .env 管理）
 const resend = new Resend("re_599kJQac_Bp9sV2bGiGzyXEMGceq4N2pg");
 
-// ✅ Discord Webhook
+// ✅ Discord Webhook（請換成你的實際 Webhook）
 const DISCORD_WEBHOOK_URL =
-    "https://discord.com/api/webhooks/你的ID/你的TOKEN";
+    "https://discord.com/api/webhooks/1385327739871035554/LTXJBXNeWy2VHtVKDSITyMK4d1A0Y4dvYHgJMdeuRaxKMcVG6t8Ft4VbQ_zuMNGDSQzo";
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -35,17 +35,30 @@ app.post("/", async (req, res) => {
         `問題：${data.questions || "無"}\n`;
 
     try {
-        // ✅ 傳送 Discord 通知
+        // ✅ Discord 通知
         await axios.post(DISCORD_WEBHOOK_URL, { content });
         console.log("✅ Discord 通知已送出");
 
-        // ✅ 寄 Email 給你自己
+        // ✅ Email 通知
         await resend.emails.send({
-            from: "RC 帝國通知 <onboarding@resend.dev>", // 寄件人
-            to: "roalxfreefire@gmail.com",
+            from: "RC 帝國 <onboarding@resend.dev>", // ❗️Resend 限制只能用這個寄件者
+            to: ["roalxfreefire@gmail.com"], // ⚠️ 必須是陣列格式
             subject: `RC帝國報名通知：${data.name}`,
-            html: `<h3>有人提交報名表：</h3><pre>${JSON.stringify(data, null, 2)}</pre>`,
+            html: `
+        <h2>📨 RC 帝國收到新報名表：</h2>
+        <ul>
+          <li><strong>姓名：</strong>${data.name}</li>
+          <li><strong>年齡：</strong>${data.age}</li>
+          <li><strong>性別：</strong>${data.gender}</li>
+          <li><strong>技能：</strong>${(data.skills || []).join(", ")}</li>
+          <li><strong>職位：</strong>${data.position}</li>
+          <li><strong>上線時間：</strong>${data.availableTime}</li>
+          <li><strong>聯絡方式：</strong>${data.contact}</li>
+          <li><strong>問題：</strong>${data.questions || "無"}</li>
+        </ul>
+      `,
         });
+
         console.log("✅ Email 已寄出");
 
         res.status(200).json({ message: "已提交，通知已送出。" });
@@ -56,5 +69,5 @@ app.post("/", async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`RC 後端伺服器運行中： http://localhost:${port}`);
+    console.log(`🚀 RC 後端伺服器運行中： http://localhost:${port}`);
 });
